@@ -37,6 +37,17 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            pickFirsts += "META-INF/INDEX.LIST"
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES" // <- Baris ini khusus untuk error Anda
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+            pickFirsts += "META-INF/io.netty.versions.properties"
+
+        }
+    }
 }
 
 dependencies {
