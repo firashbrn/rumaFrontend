@@ -10,5 +10,6 @@ import retrofit2.Callback
 interface ApiService {
 
     @POST("auth/login")
-    fun login(@Body loginRequest: loginRequest):Callback<loginRespons>
+    suspend fun login(@Body loginRequest: loginRequest):loginRespons
 }
+

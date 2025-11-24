@@ -1,4 +1,4 @@
-package com.example.rumafrontend.ui.theme.screen
+package com.example.rumafrontend.ui.theme.screen.resep
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

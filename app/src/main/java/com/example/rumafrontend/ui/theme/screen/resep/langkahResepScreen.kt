@@ -1,4 +1,4 @@
-package com.example.rumafrontend.ui.theme.screen
+package com.example.rumafrontend.ui.theme.screen.resep
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,15 +40,15 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bahanResepScreen(onNavigationBack: () -> Unit) {
-    var bahanList by remember { mutableStateOf(listOf<String>()) }
-    var bahan by remember { mutableStateOf("") }
+fun langkahScreen(onNavigationBack: () -> Unit) {
+    var langkahList by remember { mutableStateOf(listOf<String>()) }
+    var langkah by remember { mutableStateOf("") }
     Scaffold(
         containerColor = Color(0xFFF2ECDC),
         topBar = {
             TopAppBar(title = {
                 Text(
-                    "Daftar Bahan", style = MaterialTheme.typography.titleLarge.copy(
+                    "Langkah Memasak", style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold, fontSize = 25.sp
                     ), color = Color(0xFF868859)
                 )
@@ -57,17 +57,17 @@ fun bahanResepScreen(onNavigationBack: () -> Unit) {
                     containerColor = Color(0xFFF2ECDC)
                 ),
                 navigationIcon = {
-                    IconButton(onClick = onNavigationBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
-                            contentDescription = "Kembali",
-                            Modifier
-                                .size(30.dp)
-                                .padding(2.dp),
-                            tint = Color(0xFF868859)
-                        )
-                    }
-                })
+                IconButton(onClick = onNavigationBack) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "Kembali",
+                        Modifier
+                            .size(30.dp)
+                            .padding(2.dp),
+                        tint = Color(0xFF868859)
+                    )
+                }
+            })
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -78,7 +78,7 @@ fun bahanResepScreen(onNavigationBack: () -> Unit) {
             Spacer(modifier = Modifier.height(36.dp))
 
             Text(
-                "Tambahkan Bahan - Bahan yang Diperlukan!!",
+                "Tambahkan Langkah - Langkah Memasak!!",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp
@@ -91,18 +91,18 @@ fun bahanResepScreen(onNavigationBack: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = bahan,
-                    onValueChange = { bahan = it },
-                    label = { Text("Tambahkan Bahan") },
+                    value = langkah,
+                    onValueChange = { langkah = it },
+                    label = { Text("Tambahkan Langkah Memasak") },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(16.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = {
-                        if (bahan.isNotBlank()) {
-                            bahanList = bahanList + bahan
-                            bahan = ""
+                        if (langkah.isNotBlank()) {
+                            langkahList = langkahList + langkah
+                            langkah = ""
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E2625))
@@ -114,10 +114,10 @@ fun bahanResepScreen(onNavigationBack: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(24.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (bahanList.isEmpty()) {
-                    Text("Belum ada bahan ditambahkan", color = Color(0xFF292f17))
+                if (langkahList.isEmpty()) {
+                    Text("Belum ada langkah ditambahkan", color = Color(0xFF292f17))
                 } else {
-                    bahanList.forEach { item ->
+                    langkahList.forEach { item ->
                         Text(text = "• $item", color = Color(0xFF292f17))
                     }
                 }
@@ -129,6 +129,6 @@ fun bahanResepScreen(onNavigationBack: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewBahanResepScreen() {
-    bahanResepScreen {  }
+fun PreviewLangkahScreen() {
+    langkahScreen {}
 }
