@@ -1,9 +1,21 @@
 package com.example.rumafrontend.ui.theme.screen.profile
 
-import com.example.rumafrontend.data.model.pengguna
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.rumafrontend.data.model.pengguna
+import com.example.rumafrontend.data.repository.AuthRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+// DEFINISI UI STATE (Perbaikan)
 data class ProfileUiState(
-    val pengguna: pengguna = username(),
+    val userModel: pengguna? = null, // Ditambahkan untuk menyimpan objek domain
+    val username: String = "",
+    val email: String = "", // Ditambahkan karena ditampilkan di Screen
     val isSaving: Boolean = false,
     val showLogoutDialog: Boolean = false,
     val isDarkMode: Boolean = false,
@@ -17,29 +29,42 @@ class ProfileViewModel(private val repository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        // Mengumpulkan (collect) data profile dari repository ke StateFlow
+        // Logika untuk mengisi data sesi dari Room
         viewModelScope.launch {
             repository.getUserProfile().collect { user ->
-                _uiState.update { it.copy(user = user) }
+                _uiState.update { currentState ->
+                    // Memperbarui state UI dengan data dari Room/Repository
+                    currentState.copy(
+                        userModel = user, // Menyimpan model lengkap
+                        username = user.username?:"",
+                        email = user.email?:"" // Menyalin email ke field input UI
+                    )
+                }
             }
         }
-        // Catatan: Data Dark Mode harus diambil dari SharedPreferences/DataStore
     }
 
-    // Fungsi untuk Halaman Profile
+    // FUNGSI PERBAIKAN 1: onDarkModeToggle (Mengatasi error di Switch)
+    fun onDarkModeToggle(isChecked: Boolean) {
+        _uiState.update { it.copy(isDarkMode = isChecked) }
+        // TODO: Tambahkan logic untuk menyimpan preferensi Dark Mode ke DataStore/SharedPreferences
+    }
+
+    // FUNGSI PERBAIKAN 2: onLogoutClicked (Mengatasi error onClick di tombol Log Out)
     fun onLogoutClicked() {
         _uiState.update { it.copy(showLogoutDialog = true) }
     }
 
+    // FUNGSI PERBAIKAN 3 & 6: dismissLogoutDialog (Mengatasi error onDismissRequest dan onClick 'Ga jadi')
     fun dismissLogoutDialog() {
         _uiState.update { it.copy(showLogoutDialog = false) }
     }
 
+    // FUNGSI PERBAIKAN 4 & 5: confirmLogout (Mengatasi error onClick 'Yakin')
     fun confirmLogout() {
         viewModelScope.launch {
             repository.logout()
-            // Setelah logout, karena Room kosong, Flow di atas akan mengirim User() kosong
-            // yang akan memicu navigasi ke Login di Activity/Fragment
+            // Setelah logout, Flow akan terpicu dan navigasi harus dilakukan di View/Activity
         }
     }
 
@@ -48,10 +73,15 @@ class ProfileViewModel(private val repository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, error = null) }
             try {
-                // Panggil Repository untuk update
                 repository.updateProfile(username, email, password)
 
-                _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
+                // Perbarui juga data di state setelah sukses menyimpan
+                _uiState.update { it.copy(
+                    isSaving = false,
+                    saveSuccess = true,
+                    username = username,
+                    email = email
+                ) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isSaving = false, error = e.message) }
             }

@@ -5,11 +5,13 @@ import com.example.rumafrontend.data.model.loginRespons
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Callback
+import retrofit2.Response
 
 
 interface ApiService {
 
-    @POST("auth/login")
-    suspend fun login(@Body loginRequest: loginRequest):loginRespons
+    @POST("login")
+    suspend fun login(@Body request: loginRequest): Response<loginRespons> // HARUS ada Response<T>
+
 }
 
